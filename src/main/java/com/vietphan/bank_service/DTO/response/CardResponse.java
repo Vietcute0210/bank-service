@@ -20,6 +20,7 @@ public class CardResponse {
     private CardStatus status;
     private String cardNumber;
     private String cardHolderName;
+    private boolean hasPendingTransactions;
     private Instant createdAt;
     private Instant updatedAt;
 }

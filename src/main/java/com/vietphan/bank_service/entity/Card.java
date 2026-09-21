@@ -53,6 +53,10 @@ public class Card {
     @Column(name = "card_holder_name", length = 100)
     private String cardHolderName;
 
+    @Column(name = "has_pending_transactions")
+    @Builder.Default
+    private boolean hasPendingTransactions = false;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;

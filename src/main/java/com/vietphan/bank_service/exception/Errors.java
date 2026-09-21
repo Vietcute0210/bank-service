@@ -17,7 +17,8 @@ public enum Errors {
     INSUFFICIENT_FUNDS(1014, "Insufficient funds"),
     INVALID_AMOUNT(1015, "Invalid amount"),
     INVALID_ACCOUNT_TYPE(1016, "Invalid account type"),
-    INVALID_CARD_TYPE(1017, "Invalid card type");
+    INVALID_CARD_TYPE(1017, "Invalid card type"),
+    CARD_HAS_PENDING_TRANSACTIONS(1018, "Cannot delete card: Card has pending transactions");
 
     private final int code;
     private final String message;
