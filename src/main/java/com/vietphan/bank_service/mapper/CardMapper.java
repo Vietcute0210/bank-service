@@ -21,6 +21,7 @@ public class CardMapper {
                 .status(request.getStatus())
                 .cardNumber(request.getCardNumber())
                 .cardHolderName(request.getCardHolderName())
+                .hasPendingTransactions(request.getHasPendingTransactions() != null ? request.getHasPendingTransactions() : false)
                 .build();
     }
 
@@ -37,6 +38,7 @@ public class CardMapper {
                 .status(card.getStatus())
                 .cardNumber(card.getCardNumber())
                 .cardHolderName(card.getCardHolderName())
+                .hasPendingTransactions(card.isHasPendingTransactions())
                 .createdAt(card.getCreatedAt())
                 .updatedAt(card.getUpdatedAt())
                 .build();
@@ -61,6 +63,9 @@ public class CardMapper {
         }
         if (request.getCardHolderName() != null) {
             card.setCardHolderName(request.getCardHolderName());
+        }
+        if (request.getHasPendingTransactions() != null) {
+            card.setHasPendingTransactions(request.getHasPendingTransactions());
         }
     }
 }

@@ -18,4 +18,5 @@ public class CardRequest {
     private CardStatus status;
     private String cardNumber;
     private String cardHolderName;
+    private Boolean hasPendingTransactions;
 }
