@@ -4,6 +4,7 @@ import com.vietphan.bank_service.DTO.request.CardRequest;
 import com.vietphan.bank_service.DTO.response.BaseResponse;
 import com.vietphan.bank_service.DTO.response.CardResponse;
 import com.vietphan.bank_service.service.CardService;
+import com.vietphan.bank_service.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +20,7 @@ public class CardController {
 
     @PostMapping
     public BaseResponse<CardResponse> createCard(@RequestBody CardRequest request) {
+        request.setAccountId(SecurityUtils.getCurrentAccountId());
         CardResponse response = cardService.createCard(request);
         return BaseResponse.<CardResponse>builder()
                 .code(1000)
@@ -27,12 +29,13 @@ public class CardController {
                 .build();
     }
 
-    @GetMapping("/account/{accountId}")
-    public BaseResponse<List<CardResponse>> getCardsByAccountId(@PathVariable("accountId") UUID accountId) {
+    @GetMapping
+    public BaseResponse<List<CardResponse>> getMyCards() {
+        UUID accountId = SecurityUtils.getCurrentAccountId();
         List<CardResponse> responses = cardService.getCardsByAccountId(accountId);
         return BaseResponse.<List<CardResponse>>builder()
                 .code(1000)
-                .message("Get cards by account successfully")
+                .message("Get cards successfully")
                 .data(responses)
                 .build();
     }
