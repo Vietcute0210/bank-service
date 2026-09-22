@@ -18,7 +18,8 @@ public enum Errors {
     INVALID_AMOUNT(1015, "Invalid amount"),
     INVALID_ACCOUNT_TYPE(1016, "Invalid account type"),
     INVALID_CARD_TYPE(1017, "Invalid card type"),
-    CARD_HAS_PENDING_TRANSACTIONS(1018, "Cannot delete card: Card has pending transactions");
+    CARD_HAS_PENDING_TRANSACTIONS(1018, "Cannot delete card: Card has pending transactions"),
+    BALANCE_NOT_FOUND(1019, "Balance not found");
 
     private final int code;
     private final String message;
