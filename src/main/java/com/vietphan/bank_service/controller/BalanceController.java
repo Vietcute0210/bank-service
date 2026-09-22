@@ -3,6 +3,7 @@ package com.vietphan.bank_service.controller;
 import com.vietphan.bank_service.DTO.response.BalanceResponse;
 import com.vietphan.bank_service.DTO.response.BaseResponse;
 import com.vietphan.bank_service.service.BalanceService;
+import com.vietphan.bank_service.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,8 +16,9 @@ public class BalanceController {
 
     private final BalanceService balanceService;
 
-    @GetMapping("/{accountId}")
-    public BaseResponse<BalanceResponse> getBalance(@PathVariable("accountId") UUID accountId) {
+    @GetMapping
+    public BaseResponse<BalanceResponse> getMyBalance() {
+        UUID accountId = SecurityUtils.getCurrentAccountId();
         var result = balanceService.getBalance(accountId);
         return BaseResponse.<BalanceResponse>builder()
                 .code(1000)
@@ -25,11 +27,9 @@ public class BalanceController {
                 .build();
     }
 
-    @PostMapping("/{accountId}/add")
-    public BaseResponse<BalanceResponse> addBalance(
-            @PathVariable("accountId") UUID accountId,
-            @RequestParam("money") double money
-    ) {
+    @PostMapping("/add")
+    public BaseResponse<BalanceResponse> addBalance(@RequestParam("money") double money) {
+        UUID accountId = SecurityUtils.getCurrentAccountId();
         var result = balanceService.addBalance(accountId, money);
         return BaseResponse.<BalanceResponse>builder()
                 .code(1000)
@@ -38,11 +38,9 @@ public class BalanceController {
                 .build();
     }
 
-    @PostMapping("/{accountId}/sub")
-    public BaseResponse<BalanceResponse> subBalance(
-            @PathVariable("accountId") UUID accountId,
-            @RequestParam("money") double money
-    ) {
+    @PostMapping("/sub")
+    public BaseResponse<BalanceResponse> subBalance(@RequestParam("money") double money) {
+        UUID accountId = SecurityUtils.getCurrentAccountId();
         var result = balanceService.subtractBalance(accountId, money);
         return BaseResponse.<BalanceResponse>builder()
                 .code(1000)
