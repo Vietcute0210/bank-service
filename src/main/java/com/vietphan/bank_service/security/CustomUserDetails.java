@@ -9,7 +9,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 
 @RequiredArgsConstructor
 @Getter
@@ -18,7 +17,7 @@ public class CustomUserDetails implements UserDetails {
 
     private final User user;
 
-    public UUID getAccountId(){
+    public Long getAccountId(){
         return user.getAccount() != null ? user.getAccount().getAccountId() : null;
     }
 

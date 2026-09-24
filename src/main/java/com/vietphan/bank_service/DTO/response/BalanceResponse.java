@@ -4,7 +4,6 @@ import lombok.*;
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -13,8 +12,8 @@ import java.util.UUID;
 public class BalanceResponse implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private UUID balanceId;
-    private UUID accountId;
+    private Long balanceId;
+    private Long accountId;
     private double availableBalance;
     private double holdBalance;
     private Instant createdAt;

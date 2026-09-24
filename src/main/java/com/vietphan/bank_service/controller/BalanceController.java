@@ -7,8 +7,6 @@ import com.vietphan.bank_service.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
-
 @RestController
 @RequestMapping("/api/v1/balance")
 @RequiredArgsConstructor
@@ -18,7 +16,7 @@ public class BalanceController {
 
     @GetMapping
     public BaseResponse<BalanceResponse> getMyBalance() {
-        UUID accountId = SecurityUtils.getCurrentAccountId();
+        Long accountId = SecurityUtils.getCurrentAccountId();
         var result = balanceService.getBalance(accountId);
         return BaseResponse.<BalanceResponse>builder()
                 .code(1000)
@@ -29,7 +27,7 @@ public class BalanceController {
 
     @PostMapping("/add")
     public BaseResponse<BalanceResponse> addBalance(@RequestParam("money") double money) {
-        UUID accountId = SecurityUtils.getCurrentAccountId();
+        Long accountId = SecurityUtils.getCurrentAccountId();
         var result = balanceService.addBalance(accountId, money);
         return BaseResponse.<BalanceResponse>builder()
                 .code(1000)
@@ -40,7 +38,7 @@ public class BalanceController {
 
     @PostMapping("/sub")
     public BaseResponse<BalanceResponse> subBalance(@RequestParam("money") double money) {
-        UUID accountId = SecurityUtils.getCurrentAccountId();
+        Long accountId = SecurityUtils.getCurrentAccountId();
         var result = balanceService.subtractBalance(accountId, money);
         return BaseResponse.<BalanceResponse>builder()
                 .code(1000)

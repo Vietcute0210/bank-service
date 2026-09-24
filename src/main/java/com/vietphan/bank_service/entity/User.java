@@ -7,13 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.hibernate.annotations.UuidGenerator;
-import org.hibernate.type.SqlTypes;
-
 import java.time.Instant;
-import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -23,11 +18,9 @@ import java.util.UUID;
 @Table(name = "users")
 public class User {
     @Id
-    @GeneratedValue
-    @UuidGenerator(style = UuidGenerator.Style.VERSION_7)
-    @JdbcTypeCode(SqlTypes.VARCHAR)
-    @Column(name = "user_id", updatable = false, nullable = false, length = 36)
-    private UUID userId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id", updatable = false, nullable = false)
+    private Long userId;
 
     @Column(name = "username", nullable = false, unique = true, length = 50)
     private String username;

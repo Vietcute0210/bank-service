@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Random;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -70,7 +69,7 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
-    public List<CardResponse> getCardsByAccountId(UUID accountId) {
+    public List<CardResponse> getCardsByAccountId(Long accountId) {
 
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new AppException(Errors.ACCOUNT_NOT_FOUND));
@@ -81,7 +80,7 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
-    public CardResponse getCardById(UUID cardId) {
+    public CardResponse getCardById(Long cardId) {
         return cardRepository.findById(cardId)
                 .map(cardMapper::toResponse)
                 .orElseThrow(() -> new AppException(Errors.CARD_NOT_FOUND));
@@ -89,7 +88,7 @@ public class CardServiceImpl implements CardService {
 
     @Override
     @Transactional
-    public CardResponse deleteCard(UUID cardId) {
+    public CardResponse deleteCard(Long cardId) {
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new AppException(Errors.CARD_NOT_FOUND));
 

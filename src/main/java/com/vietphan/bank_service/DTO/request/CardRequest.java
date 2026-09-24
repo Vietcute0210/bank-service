@@ -5,14 +5,13 @@ import com.vietphan.bank_service.enums.CardType;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class CardRequest {
-    private UUID accountId;
+    private Long accountId;
     private CardType cardType;
     private LocalDate expiryDate;
     private CardStatus status;

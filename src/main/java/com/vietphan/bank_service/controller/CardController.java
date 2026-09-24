@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/card")
@@ -31,7 +30,7 @@ public class CardController {
 
     @GetMapping
     public BaseResponse<List<CardResponse>> getMyCards() {
-        UUID accountId = SecurityUtils.getCurrentAccountId();
+        Long accountId = SecurityUtils.getCurrentAccountId();
         List<CardResponse> responses = cardService.getCardsByAccountId(accountId);
         return BaseResponse.<List<CardResponse>>builder()
                 .code(1000)
@@ -41,7 +40,7 @@ public class CardController {
     }
 
     @GetMapping("/{id}")
-    public BaseResponse<CardResponse> getCardById(@PathVariable("id") UUID id) {
+    public BaseResponse<CardResponse> getCardById(@PathVariable("id") Long id) {
         CardResponse response = cardService.getCardById(id);
         return BaseResponse.<CardResponse>builder()
                 .code(1000)
@@ -51,7 +50,7 @@ public class CardController {
     }
 
     @DeleteMapping("/{id}")
-    public BaseResponse<CardResponse> deleteCard(@PathVariable("id") UUID id) {
+    public BaseResponse<CardResponse> deleteCard(@PathVariable("id") Long id) {
         CardResponse response = cardService.deleteCard(id);
         return BaseResponse.<CardResponse>builder()
                 .code(1000)

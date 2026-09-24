@@ -6,7 +6,6 @@ import lombok.*;
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -15,7 +14,7 @@ import java.util.UUID;
 public class AccountResponse implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private UUID accountId;
+    private Long accountId;
     private String customerName;
     private String email;
     private String phoneNumber;

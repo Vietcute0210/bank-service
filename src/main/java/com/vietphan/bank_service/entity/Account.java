@@ -5,13 +5,8 @@ import com.vietphan.bank_service.enums.AccountType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.hibernate.annotations.UuidGenerator;
-import org.hibernate.type.SqlTypes;
-
 import java.time.Instant;
-import java.util.UUID;
 
 @Entity
 @Table(name = "accounts", indexes = {
@@ -25,11 +20,9 @@ import java.util.UUID;
 public class Account {
 
     @Id
-    @GeneratedValue
-    @UuidGenerator(style = UuidGenerator.Style.VERSION_7)
-    @JdbcTypeCode(SqlTypes.VARCHAR)
-    @Column(name = "account_id", updatable = false, nullable = false, length = 36)
-    private UUID accountId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "account_id", updatable = false, nullable = false)
+    private Long accountId;
 
     @Column(name = "customer_name", nullable = false, length = 100)
     private String customerName;

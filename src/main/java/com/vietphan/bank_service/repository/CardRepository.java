@@ -7,10 +7,9 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Repository
-public interface CardRepository extends JpaRepository<Card, UUID> {
+public interface CardRepository extends JpaRepository<Card, Long> {
     List<Card> findByAccount(Account account);
     Optional<Card> findByCardNumber(String cardNumber);
     boolean existsByAccount(Account account);
