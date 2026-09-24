@@ -44,6 +44,24 @@ public class HandleGlobalException {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    public ResponseEntity<BaseResponse<Void>> handleAccessDeniedException(org.springframework.security.access.AccessDeniedException ex) {
+        BaseResponse<Void> response = BaseResponse.<Void>builder()
+                .code(Errors.FORBIDDEN.getCode())
+                .message(Errors.FORBIDDEN.getMessage())
+                .build();
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+    }
+
+    @ExceptionHandler(org.springframework.security.core.AuthenticationException.class)
+    public ResponseEntity<BaseResponse<Void>> handleAuthenticationException(org.springframework.security.core.AuthenticationException ex) {
+        BaseResponse<Void> response = BaseResponse.<Void>builder()
+                .code(Errors.UNAUTHENTICATED.getCode())
+                .message(Errors.UNAUTHENTICATED.getMessage())
+                .build();
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<BaseResponse<Void>> handleGeneralException(Exception ex) {
         BaseResponse<Void> response = BaseResponse.<Void>builder()

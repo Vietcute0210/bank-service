@@ -11,7 +11,7 @@ import java.util.UUID;
 public class SecurityUtils {
     public static CustomUserDetails getCurrentUserDetails(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if(authentication != null || !authentication.isAuthenticated() || !(authentication.getPrincipal() instanceof CustomUserDetails userDetails)){
+        if (authentication == null || !authentication.isAuthenticated() || !(authentication.getPrincipal() instanceof CustomUserDetails userDetails)) {
             throw new AppException(Errors.ACCOUNT_NOT_FOUND);
         }
         return userDetails;
