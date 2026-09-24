@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/account")
@@ -18,7 +17,7 @@ public class AccountController {
     private final AccountService accountService;
 
     @GetMapping("/{id}")
-    public BaseResponse<AccountResponse> getAccountById(@PathVariable("id") UUID id) {
+    public BaseResponse<AccountResponse> getAccountById(@PathVariable("id") Long id) {
         AccountResponse response = accountService.getAccountById(id);
         return BaseResponse.<AccountResponse>builder()
                 .code(1000)
@@ -49,7 +48,7 @@ public class AccountController {
 
     @PutMapping("/{id}")
     public BaseResponse<AccountResponse> updateAccount(
-            @PathVariable("id") UUID id,
+            @PathVariable("id") Long id,
             @RequestBody AccountRequest request
     ) {
         AccountResponse response = accountService.updateAccount(id, request);
@@ -61,7 +60,7 @@ public class AccountController {
     }
 
     @DeleteMapping("/{id}")
-    public BaseResponse<AccountResponse> deleteAccount(@PathVariable("id") UUID id) {
+    public BaseResponse<AccountResponse> deleteAccount(@PathVariable("id") Long id) {
         AccountResponse response = accountService.deleteAccount(id);
         return BaseResponse.<AccountResponse>builder()
                 .code(1000)

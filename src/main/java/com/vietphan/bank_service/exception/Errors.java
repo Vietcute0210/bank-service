@@ -8,7 +8,7 @@ public enum Errors {
     ACCOUNT_CLOSED(1005, "Account is closed"),
     ACCOUNT_HAS_LINKED_CARDS(1006, "Cannot delete account: Account has linked cards"),
     ACCOUNT_HAS_NON_ZERO_BALANCE(1007, "Cannot delete account: Account balance must be zero"),
-    INVALID_ID_FORMAT(1008, "Invalid ID format: Must be a valid UUID"),
+    INVALID_ID_FORMAT(1008, "Invalid ID format: Must be a valid number"),
     CARD_NOT_FOUND(1009, "Card not found"),
     CARD_ALREADY_EXISTS(1010, "Card already exists"),
     CARD_INACTIVE(1011, "Card is inactive"),
@@ -25,7 +25,9 @@ public enum Errors {
     REFRESHTOKEN_REVOKED(1021,"Refresh token was expired or revoked"),
     UNAUTHENTICATED(1022, "Full authentication is required to access this resource"),
     FORBIDDEN(1023, "Forbidden: You do not have permission to access this resource"),
-    ACCESS_DENIED(1024, "Access denied");
+    ACCESS_DENIED(1024, "Access denied"),
+
+    TRANSACTION_NOT_FOUND(1025, "transaction is not found");
 
     private final int code;
     private final String message;

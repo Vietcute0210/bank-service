@@ -4,11 +4,18 @@ import com.vietphan.bank_service.DTO.response.BalanceResponse;
 import com.vietphan.bank_service.constant.RedisConstants;
 import com.vietphan.bank_service.entity.Account;
 import com.vietphan.bank_service.entity.Balance;
+import com.vietphan.bank_service.entity.Card;
+import com.vietphan.bank_service.entity.Transaction;
+import com.vietphan.bank_service.enums.CardStatus;
+import com.vietphan.bank_service.enums.TransactionStatus;
+import com.vietphan.bank_service.enums.TransactionType;
 import com.vietphan.bank_service.exception.AppException;
 import com.vietphan.bank_service.exception.Errors;
 import com.vietphan.bank_service.mapper.BalanceMapper;
 import com.vietphan.bank_service.repository.AccountRepository;
 import com.vietphan.bank_service.repository.BalanceRepository;
+import com.vietphan.bank_service.repository.CardRepository;
+import com.vietphan.bank_service.repository.TransactionRepository;
 import com.vietphan.bank_service.service.BalanceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,7 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
-import java.util.UUID;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +32,8 @@ public class BalanceServiceImpl implements BalanceService {
 
     private final BalanceRepository balanceRepository;
     private final AccountRepository accountRepository;
+    private final CardRepository cardRepository;
+    private final TransactionRepository transactionRepository;
     private final BalanceMapper balanceMapper;
     private final RedisTemplate<String, Object> redisTemplate;
 
@@ -32,7 +41,7 @@ public class BalanceServiceImpl implements BalanceService {
     private long cacheTtlMinutes;
 
     @Override
-    public BalanceResponse getBalance(UUID accountId) {
+    public BalanceResponse getBalance(Long accountId) {
         if (accountId == null) {
             throw new AppException(Errors.ACCOUNT_NOT_FOUND);
         }
@@ -66,7 +75,7 @@ public class BalanceServiceImpl implements BalanceService {
 
     @Override
     @Transactional
-    public BalanceResponse addBalance(UUID accountId, double money) {
+    public BalanceResponse addBalance(Long accountId, double money) {
         if (money <= 0) {
             throw new AppException(Errors.INVALID_AMOUNT);
         }
@@ -84,6 +93,24 @@ public class BalanceServiceImpl implements BalanceService {
         balance.setAvailableBalance(balance.getAvailableBalance() + money);
         Balance updatedBalance = balanceRepository.save(balance);
 
+        // Lấy cardNumber từ danh sách thẻ của account
+        List<Card> cards = cardRepository.findByAccount(account);
+        String cardNumber = cards.stream()
+                .filter(c -> c.getStatus() == CardStatus.ACTIVE)
+                .findFirst()
+                .map(Card::getCardNumber)
+                .orElse(cards.isEmpty() ? "0" : cards.get(0).getCardNumber());
+
+        // Ghi log giao dịch DEPOSIT
+        Transaction transaction = Transaction.builder()
+                .fromCardNumber("0")
+                .toCardNumber(cardNumber)
+                .amount(money)
+                .transactionType(TransactionType.DEPOSIT)
+                .status(TransactionStatus.SUCCESS)
+                .build();
+        transactionRepository.save(transaction);
+
         BalanceResponse response = balanceMapper.toResponse(updatedBalance);
         String keyCache = RedisConstants.BALANCE_CACHE_PREFIX + accountId;
         try {
@@ -97,7 +124,7 @@ public class BalanceServiceImpl implements BalanceService {
 
     @Override
     @Transactional
-    public BalanceResponse subtractBalance(UUID accountId, double money) {
+    public BalanceResponse subtractBalance(Long accountId, double money) {
         if (money <= 0) {
             throw new AppException(Errors.INVALID_AMOUNT);
         }
@@ -118,6 +145,24 @@ public class BalanceServiceImpl implements BalanceService {
 
         balance.setAvailableBalance(balance.getAvailableBalance() - money);
         Balance updatedBalance = balanceRepository.save(balance);
+
+        // Lấy cardNumber từ danh sách thẻ của account
+        List<Card> cards = cardRepository.findByAccount(account);
+        String cardNumber = cards.stream()
+                .filter(c -> c.getStatus() == CardStatus.ACTIVE)
+                .findFirst()
+                .map(Card::getCardNumber)
+                .orElse(cards.isEmpty() ? "0" : cards.get(0).getCardNumber());
+
+        // Ghi log giao dịch WITHDRAWAL
+        Transaction transaction = Transaction.builder()
+                .fromCardNumber(cardNumber)
+                .toCardNumber("0")
+                .amount(money)
+                .transactionType(TransactionType.WITHDRAWAL)
+                .status(TransactionStatus.SUCCESS)
+                .build();
+        transactionRepository.save(transaction);
 
         BalanceResponse response = balanceMapper.toResponse(updatedBalance);
         String keyCache = RedisConstants.BALANCE_CACHE_PREFIX + accountId;

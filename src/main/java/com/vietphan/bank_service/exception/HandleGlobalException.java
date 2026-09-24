@@ -7,8 +7,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import java.util.UUID;
-
 @RestControllerAdvice
 public class HandleGlobalException {
 
@@ -24,7 +22,7 @@ public class HandleGlobalException {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<BaseResponse<Void>> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex) {
         String message = Errors.INVALID_ID_FORMAT.getMessage();
-        if (ex.getRequiredType() != null && !ex.getRequiredType().equals(UUID.class)) {
+        if (ex.getRequiredType() != null && !ex.getRequiredType().equals(Long.class)) {
             message = String.format("Invalid parameter '%s': Expected type %s", ex.getName(), ex.getRequiredType().getSimpleName());
         }
 

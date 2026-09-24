@@ -23,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -39,7 +38,7 @@ public class AccountServiceImpl implements AccountService {
     private long cacheTtlMinutes;
 
     @Override
-    public AccountResponse getAccountById(UUID accountId) {
+    public AccountResponse getAccountById(Long accountId) {
         String cacheKey = RedisConstants.ACCOUNT_CACHE_PREFIX + accountId;
         try{
             Object cache = redisTemplate.opsForValue().get(cacheKey);
@@ -92,7 +91,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public AccountResponse updateAccount(UUID accountId, AccountRequest accountRequest) {
+    public AccountResponse updateAccount(Long accountId, AccountRequest accountRequest) {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new AppException(Errors.ACCOUNT_NOT_FOUND));
 
@@ -127,7 +126,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public AccountResponse deleteAccount(UUID accountId) {
+    public AccountResponse deleteAccount(Long accountId) {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new AppException(Errors.ACCOUNT_NOT_FOUND));
 

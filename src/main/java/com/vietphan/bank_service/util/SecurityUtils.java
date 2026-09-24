@@ -6,8 +6,6 @@ import com.vietphan.bank_service.security.CustomUserDetails;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.util.UUID;
-
 public class SecurityUtils {
     public static CustomUserDetails getCurrentUserDetails(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -17,8 +15,8 @@ public class SecurityUtils {
         return userDetails;
     }
 
-    public static UUID getCurrentAccountId(){
-        UUID accountId = getCurrentUserDetails().getAccountId();
+    public static Long getCurrentAccountId(){
+        Long accountId = getCurrentUserDetails().getAccountId();
         if(accountId == null){
             throw  new AppException(Errors.ACCOUNT_NOT_FOUND);
         }

@@ -12,7 +12,6 @@ import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.function.Function;
 
 @Service
@@ -31,10 +30,16 @@ public class JwtService {
         return extractClaim(token, Claims::getSubject);
     }
 
-    public UUID extractAccountId(String token) {
+    public Long extractAccountId(String token) {
         Claims claims = extractAllClaims(token);
-        String accountIdStr = claims.get("accountId", String.class);
-        return accountIdStr != null ? UUID.fromString(accountIdStr) : null;
+        Object accountIdObj = claims.get("accountId");
+        if (accountIdObj == null) {
+            return null;
+        }
+        if (accountIdObj instanceof Number number) {
+            return number.longValue();
+        }
+        return Long.valueOf(accountIdObj.toString());
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
@@ -42,11 +47,11 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
-    // Sinh Access Token có nhúng accountId
-    public String generateToken(UserDetails userDetails, UUID accountId) {
+    // Sinh Access Token co nhung accountId
+    public String generateToken(UserDetails userDetails, Long accountId) {
         Map<String, Object> extraClaims = new HashMap<>();
         if (accountId != null) {
-            extraClaims.put("accountId", accountId.toString());
+            extraClaims.put("accountId", accountId);
         }
         return buildToken(extraClaims, userDetails, jwtExpiration);
     }

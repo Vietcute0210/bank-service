@@ -6,13 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.hibernate.annotations.UuidGenerator;
-import org.hibernate.type.SqlTypes;
-
 import java.time.Instant;
-import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -25,11 +20,9 @@ import java.util.UUID;
 public class Balance {
 
     @Id
-    @GeneratedValue
-    @UuidGenerator(style = UuidGenerator.Style.VERSION_7)
-    @JdbcTypeCode(SqlTypes.VARCHAR)
-    @Column(name = "balance_id", updatable = false, nullable = false, length = 36)
-    private UUID balanceId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "balance_id", updatable = false, nullable = false)
+    private Long balanceId;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id", nullable = false, unique = true)
