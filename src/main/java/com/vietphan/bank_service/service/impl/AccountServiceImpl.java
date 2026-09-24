@@ -2,6 +2,7 @@ package com.vietphan.bank_service.service.impl;
 
 import com.vietphan.bank_service.DTO.request.AccountRequest;
 import com.vietphan.bank_service.DTO.response.AccountResponse;
+import com.vietphan.bank_service.constant.RedisConstants;
 import com.vietphan.bank_service.entity.Account;
 import com.vietphan.bank_service.entity.Balance;
 import com.vietphan.bank_service.enums.AccountStatus;
@@ -14,9 +15,12 @@ import com.vietphan.bank_service.repository.BalanceRepository;
 import com.vietphan.bank_service.repository.CardRepository;
 import com.vietphan.bank_service.service.AccountService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -29,13 +33,32 @@ public class AccountServiceImpl implements AccountService {
     private final AccountMapper accountMapper;
     private final CardRepository cardRepository;
     private final BalanceRepository balanceRepository;
+    private final RedisTemplate<String, Object> redisTemplate;
+
+    @Value("${app.cache.ttl-minutes:10}")
+    private long cacheTtlMinutes;
 
     @Override
     public AccountResponse getAccountById(UUID accountId) {
-        return accountRepository.findById(accountId)
+        String cacheKey = RedisConstants.ACCOUNT_CACHE_PREFIX + accountId;
+        try{
+            Object cache = redisTemplate.opsForValue().get(cacheKey);
+            if(cache instanceof AccountResponse cachedAccount){
+                return cachedAccount;
+            }
+        }catch (Exception e){
+        }
+        AccountResponse response = accountRepository.findById(accountId)
                 .map(accountMapper::toResponse)
                 .orElseThrow(() -> new AppException(Errors.ACCOUNT_NOT_FOUND));
+
+        try{
+            redisTemplate.opsForValue().set(cacheKey, response, Duration.ofMinutes(cacheTtlMinutes));
+        } catch (Exception e) {
+        }
+        return response;
     }
+
 
     @Override
     @Transactional
@@ -90,7 +113,16 @@ public class AccountServiceImpl implements AccountService {
         }
 
         Account updatedAccount = accountRepository.save(account);
-        return accountMapper.toResponse(updatedAccount);
+        AccountResponse responex = accountMapper.toResponse(updatedAccount);
+
+        // xoa cache cu o redis de con cap nhat du lieu moi
+        try {
+            redisTemplate.delete(RedisConstants.ACCOUNT_CACHE_PREFIX + accountId);
+        } catch (Exception e) {
+            System.err.println("Redis error on delete: " + e.getMessage());
+        }
+
+        return responex;
     }
 
     @Override
@@ -113,6 +145,14 @@ public class AccountServiceImpl implements AccountService {
 
         account.setStatus(AccountStatus.INACTIVE);
         Account deletedAccount = accountRepository.save(account);
+
+        // Xóa cache trong Redis
+        try {
+            redisTemplate.delete(RedisConstants.ACCOUNT_CACHE_PREFIX + accountId);
+        } catch (Exception e) {
+            System.err.println("Redis error on delete: " + e.getMessage());
+        }
+
         return accountMapper.toResponse(deletedAccount);
     }
 

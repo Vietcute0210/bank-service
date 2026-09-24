@@ -22,8 +22,10 @@ public enum Errors {
     BALANCE_NOT_FOUND(1019, "Balance not found"),
 
     REFRESHTOKEN_NOT_FOUND(1020,"Refresh token does not exist"),
-
-    REFRESHTOKEN_REVOKED(1021,"Refresh token was expired or revoked");
+    REFRESHTOKEN_REVOKED(1021,"Refresh token was expired or revoked"),
+    UNAUTHENTICATED(1022, "Full authentication is required to access this resource"),
+    FORBIDDEN(1023, "Forbidden: You do not have permission to access this resource"),
+    ACCESS_DENIED(1024, "Access denied");
 
     private final int code;
     private final String message;
