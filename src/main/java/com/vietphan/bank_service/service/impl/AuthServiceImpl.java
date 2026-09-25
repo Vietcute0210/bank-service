@@ -11,11 +11,13 @@ import com.vietphan.bank_service.entity.User;
 import com.vietphan.bank_service.enums.AccountStatus;
 import com.vietphan.bank_service.enums.AccountType;
 import com.vietphan.bank_service.enums.Role;
+import com.vietphan.bank_service.entity.UserLevel;
 import com.vietphan.bank_service.exception.AppException;
 import com.vietphan.bank_service.exception.Errors;
 import com.vietphan.bank_service.repository.AccountRepository;
 import com.vietphan.bank_service.repository.BalanceRepository;
 import com.vietphan.bank_service.repository.RefreshTokenRepository;
+import com.vietphan.bank_service.repository.UserLevelRepository;
 import com.vietphan.bank_service.repository.UserRepository;
 import com.vietphan.bank_service.security.CustomUserDetails;
 import com.vietphan.bank_service.service.AuthService;
@@ -37,6 +39,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final AccountRepository accountRepository;
     private final BalanceRepository balanceRepository;
+    private final UserLevelRepository userLevelRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final RefreshTokenRepository refreshTokenRepository;
@@ -70,12 +73,14 @@ public class AuthServiceImpl implements AuthService {
                 .build();
         balanceRepository.save(balance);
 
-        // khoi tao user lien ket account
+        // khoi tao user lien ket account va level mac dinh
+        UserLevel defaultLevel = userLevelRepository.findByLevelName("VIP1").orElse(null);
         User user = User.builder()
                 .account(savedAccount)
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER)
+                .level(defaultLevel)
                 .build();
         userRepository.save(user);
 

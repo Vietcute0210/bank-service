@@ -27,7 +27,11 @@ public enum Errors {
     FORBIDDEN(1023, "Forbidden: You do not have permission to access this resource"),
     ACCESS_DENIED(1024, "Access denied"),
 
-    TRANSACTION_NOT_FOUND(1025, "transaction is not found");
+    TRANSACTION_NOT_FOUND(1025, "transaction is not found"),
+    USER_LEVEL_NOT_FOUND(1034, "User level not found"),
+    USER_LEVEL_ALREADY_EXISTS(1035, "User level already exists"),
+    USER_LEVEL_IN_USE(1036, "Cannot delete user level: It is assigned to one or more users"),
+    INVALID_USER_LEVEL_DATA(1037, "Invalid user level data");
 
     private final int code;
     private final String message;
