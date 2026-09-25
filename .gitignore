@@ -31,3 +31,13 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Postman Collections & JSON files ###
+*.json
+
+### Images & Design Assets ###
+images/
+Banking (Copy)/
+*.png
+*.jpg
+*.jpeg
