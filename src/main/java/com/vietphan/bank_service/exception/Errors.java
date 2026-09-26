@@ -27,7 +27,15 @@ public enum Errors {
     FORBIDDEN(1023, "Forbidden: You do not have permission to access this resource"),
     ACCESS_DENIED(1024, "Access denied"),
 
-    TRANSACTION_NOT_FOUND(1025, "transaction is not found");
+    TRANSACTION_NOT_FOUND(1025, "transaction is not found"),
+    CARD_NOT_BELONG_TO_USER(1026, "Card does not belong to current user"),
+    TRANSACTION_ALREADY_PROCESSED(1027, "Transaction already processed"),
+    OTP_EXPIRED(1028, "OTP has expired"),
+    OTP_INVALID(1029, "Invalid OTP code"),
+    TRANSFER_LIMIT_EXCEEDED(1030, "Daily transfer limit exceeded"),
+    CANNOT_TRANSFER_TO_SAME_CARD(1031, "Cannot transfer to the same card"),
+    EMAIL_SEND_FAILED(1032, "Failed to send email"),
+    RECEIVER_CARD_NOT_FOUND(1033, "Receiver card not found");
 
     private final int code;
     private final String message;

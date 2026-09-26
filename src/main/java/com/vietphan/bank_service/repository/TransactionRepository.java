@@ -20,5 +20,12 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     @Query("SELECT t FROM Transaction t WHERE t.fromCardNumber IN :cardNumbers OR t.toCardNumber IN :cardNumbers ORDER BY t.createdAt DESC")
     List<Transaction> findByCardNumbers(@Param("cardNumbers") List<String> cardNumbers);
 
+    @Query("SELECT COALESCE(SUM(t.amount), 0.0) FROM Transaction t " +
+           "WHERE t.fromCardNumber IN :cardNumbers " +
+           "AND t.transactionType = com.vietphan.bank_service.enums.TransactionType.TRANSFER " +
+           "AND t.status = com.vietphan.bank_service.enums.TransactionStatus.SUCCESS " +
+           "AND t.createdAt >= :startOfDay")
+    double sumDailyTransfers(@Param("cardNumbers") List<String> cardNumbers, @Param("startOfDay") java.time.Instant startOfDay);
+
     Page<Transaction> findAll(Pageable pageable);
 }
