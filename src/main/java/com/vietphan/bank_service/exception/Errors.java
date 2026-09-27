@@ -31,7 +31,12 @@ public enum Errors {
     USER_LEVEL_NOT_FOUND(1034, "User level not found"),
     USER_LEVEL_ALREADY_EXISTS(1035, "User level already exists"),
     USER_LEVEL_IN_USE(1036, "Cannot delete user level: It is assigned to one or more users"),
-    INVALID_USER_LEVEL_DATA(1037, "Invalid user level data");
+    INVALID_USER_LEVEL_DATA(1037, "Invalid user level data"),
+    USER_NOT_FOUND(1038, "User not found"),
+    USER_ALREADY_EXISTS(1039, "User already exists"),
+    CANNOT_DELETE_ADMIN_USER(1040, "Cannot delete current admin user"),
+    EMAIL_ALREADY_EXISTS(1041, "Email already exists"),
+    PHONE_NUMBER_ALREADY_EXISTS(1042, "Phone number already exists");
 
     private final int code;
     private final String message;
