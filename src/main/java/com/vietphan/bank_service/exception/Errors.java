@@ -28,17 +28,20 @@ public enum Errors {
     ACCESS_DENIED(1024, "Access denied"),
 
     TRANSACTION_NOT_FOUND(1025, "transaction is not found"),
+    USER_NOT_FOUND(1033, "User not found"),
     USER_LEVEL_NOT_FOUND(1034, "User level not found"),
     USER_LEVEL_ALREADY_EXISTS(1035, "User level already exists"),
-    USER_LEVEL_IN_USE(1036, "Cannot delete user level: It is assigned to one or more users"),
-    INVALID_USER_LEVEL_DATA(1037, "Invalid user level data"),
-    USER_NOT_FOUND(1038, "User not found"),
-    USER_ALREADY_EXISTS(1039, "User already exists"),
-    CANNOT_DELETE_ADMIN_USER(1040, "Cannot delete current admin user"),
-    EMAIL_ALREADY_EXISTS(1041, "Email already exists"),
-    PHONE_NUMBER_ALREADY_EXISTS(1042, "Phone number already exists"),
-    INVALID_OTP(1043, "Mã OTP không chính xác hoặc đã hết hạn"),
-    TRANSACTION_ALREADY_PROCESSED(1044, "Giao dịch đã được xử lý hoặc đã kết thúc");
+    CARD_LIMIT_EXCEEDED(1036, "Card limit exceeded for current VIP level"),
+    USER_HAS_LINKED_DATA(1037, "Cannot delete user: has linked accounts/cards"),
+    WITHDRAW_MIN_AMOUNT(1038, "Số tiền phải lớn hơn 1 triệu"),
+    USER_LEVEL_IN_USE(1039, "Cannot delete user level: It is assigned to one or more users"),
+    INVALID_USER_LEVEL_DATA(1040, "Invalid user level data"),
+    USER_ALREADY_EXISTS(1041, "User already exists"),
+    CANNOT_DELETE_ADMIN_USER(1042, "Cannot delete current admin user"),
+    EMAIL_ALREADY_EXISTS(1043, "Email already exists"),
+    PHONE_NUMBER_ALREADY_EXISTS(1044, "Phone number already exists"),
+    INVALID_OTP(1045, "Mã OTP không chính xác hoặc đã hết hạn"),
+    TRANSACTION_ALREADY_PROCESSED(1046, "Giao dịch đã được xử lý hoặc đã kết thúc");
 
     private final int code;
     private final String message;

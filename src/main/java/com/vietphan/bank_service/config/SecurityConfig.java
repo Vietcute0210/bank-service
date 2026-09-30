@@ -31,8 +31,16 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
+                        // Public endpoints
                         .requestMatchers("/api/v1/auth/**").permitAll()
-                        .requestMatchers("/api/v1/admin/**").hasAnyAuthority("ADMIN", "ROLE_ADMIN")
+                        // User endpoints (authenticated)
+                        .requestMatchers("/api/v1/balance/**").authenticated()
+                        .requestMatchers("/api/v1/card/**").authenticated()
+                        .requestMatchers("/api/v1/transfer/**").authenticated()
+                        .requestMatchers("/api/v1/transaction/**", "/api/v1/transactions/**").authenticated()
+                        .requestMatchers("/api/v1/account/**").authenticated()
+                        // Admin only endpoints
+                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exceptions -> exceptions
