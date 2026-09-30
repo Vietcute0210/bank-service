@@ -1,5 +1,6 @@
 package com.vietphan.bank_service.repository;
 
+import com.vietphan.bank_service.entity.Account;
 import com.vietphan.bank_service.entity.User;
 import com.vietphan.bank_service.entity.UserLevel;
 import com.vietphan.bank_service.enums.Role;
@@ -30,6 +31,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @EntityGraph(attributePaths = {"account", "level"})
     List<User> findByLevel_LevelNameAndRole(String levelName, Role role);
 
+    @EntityGraph(attributePaths = {"account", "level"})
+    Optional<User> findByAccount(Account account);
+
     boolean existsByUsername(String username);
     boolean existsByLevel(UserLevel level);
+    boolean existsByAccount(Account account);
 }
