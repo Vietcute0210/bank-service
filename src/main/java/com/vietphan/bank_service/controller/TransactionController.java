@@ -1,19 +1,20 @@
 package com.vietphan.bank_service.controller;
 
+import com.vietphan.bank_service.DTO.request.TransferConfirmRequest;
+import com.vietphan.bank_service.DTO.request.TransferInitiateRequest;
 import com.vietphan.bank_service.DTO.response.BaseResponse;
 import com.vietphan.bank_service.DTO.response.TransactionResponse;
+import com.vietphan.bank_service.DTO.response.TransferConfirmResponse;
+import com.vietphan.bank_service.DTO.response.TransferInitiateResponse;
 import com.vietphan.bank_service.service.TransactionService;
 import com.vietphan.bank_service.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/transaction")
+@RequestMapping({"/api/v1/transaction", "/api/v1/transactions"})
 @RequiredArgsConstructor
 public class TransactionController {
 
@@ -48,6 +49,28 @@ public class TransactionController {
                 .code(1000)
                 .message("Get transaction successfully")
                 .data(result)
+                .build();
+    }
+
+    @PostMapping("/initiate")
+    public BaseResponse<TransferInitiateResponse> initiateTransfer(@RequestBody TransferInitiateRequest request) {
+        Long accountId = SecurityUtils.getCurrentAccountId();
+        TransferInitiateResponse response = transactionService.initiateTransfer(accountId, request);
+        return BaseResponse.<TransferInitiateResponse>builder()
+                .code(1000)
+                .message("Transfer initiated successfully")
+                .data(response)
+                .build();
+    }
+
+    @PostMapping("/confirm")
+    public BaseResponse<TransferConfirmResponse> confirmTransfer(@RequestBody TransferConfirmRequest request) {
+        Long accountId = SecurityUtils.getCurrentAccountId();
+        TransferConfirmResponse response = transactionService.confirmTransfer(accountId, request);
+        return BaseResponse.<TransferConfirmResponse>builder()
+                .code(1000)
+                .message("Transfer confirmed successfully")
+                .data(response)
                 .build();
     }
 }
