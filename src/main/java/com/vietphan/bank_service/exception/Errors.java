@@ -36,7 +36,9 @@ public enum Errors {
     USER_ALREADY_EXISTS(1039, "User already exists"),
     CANNOT_DELETE_ADMIN_USER(1040, "Cannot delete current admin user"),
     EMAIL_ALREADY_EXISTS(1041, "Email already exists"),
-    PHONE_NUMBER_ALREADY_EXISTS(1042, "Phone number already exists");
+    PHONE_NUMBER_ALREADY_EXISTS(1042, "Phone number already exists"),
+    INVALID_OTP(1043, "Mã OTP không chính xác hoặc đã hết hạn"),
+    TRANSACTION_ALREADY_PROCESSED(1044, "Giao dịch đã được xử lý hoặc đã kết thúc");
 
     private final int code;
     private final String message;
