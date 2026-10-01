@@ -53,7 +53,7 @@ public class AdminCardServiceImpl implements AdminCardService {
 
         Account account = card.getAccount();
         User user = (account != null) ? userRepository.findByAccount(account).orElse(null) : null;
-        Balance balance = (account != null) ? balanceRepository.findByAccount(account).orElse(null) : null;
+        Balance balance = balanceRepository.findByCard(card).orElse(null);
 
         return buildCardDetailResponse(card, account, user, balance);
     }
@@ -160,7 +160,7 @@ public class AdminCardServiceImpl implements AdminCardService {
             throw new AppException(Errors.ACCOUNT_NOT_FOUND);
         }
 
-        Balance balance = balanceRepository.findByAccount(account)
+        Balance balance = balanceRepository.findByCard(card)
                 .orElseThrow(() -> new AppException(Errors.BALANCE_NOT_FOUND));
 
         balance.setAvailableBalance(balance.getAvailableBalance() + request.getAmount());
@@ -200,7 +200,7 @@ public class AdminCardServiceImpl implements AdminCardService {
             throw new AppException(Errors.ACCOUNT_NOT_FOUND);
         }
 
-        Balance balance = balanceRepository.findByAccount(account)
+        Balance balance = balanceRepository.findByCard(card)
                 .orElseThrow(() -> new AppException(Errors.BALANCE_NOT_FOUND));
 
         if (balance.getAvailableBalance() < request.getAmount()) {

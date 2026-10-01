@@ -24,9 +24,13 @@ public class Balance {
     @Column(name = "balance_id", updatable = false, nullable = false)
     private Long balanceId;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id", nullable = false, unique = true)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_id", nullable = false)
     private Account account;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "card_id")
+    private Card card;
 
     @Column(name = "available_balance", nullable = false)
     @Builder.Default

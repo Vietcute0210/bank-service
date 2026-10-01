@@ -75,11 +75,18 @@ public class AdminUserServiceImpl implements AdminUserService {
 
         Account account = user.getAccount();
         List<CardResponse> cardResponses = Collections.emptyList();
-        var balanceResponse = (account != null)
-                ? balanceRepository.findByAccount(account).map(balanceMapper::toResponse).orElse(null)
-                : null;
-
+        com.vietphan.bank_service.DTO.response.BalanceResponse balanceResponse = null;
+        
         if (account != null) {
+            List<Balance> balances = balanceRepository.findByAccount(account);
+            double totalAvailable = balances.stream().mapToDouble(Balance::getAvailableBalance).sum();
+            double totalHold = balances.stream().mapToDouble(Balance::getHoldBalance).sum();
+            balanceResponse = com.vietphan.bank_service.DTO.response.BalanceResponse.builder()
+                    .accountId(account.getAccountId())
+                    .availableBalance(totalAvailable)
+                    .holdBalance(totalHold)
+                    .build();
+
             cardResponses = cardRepository.findByAccount(account).stream()
                     .map(cardMapper::toResponse)
                     .toList();
@@ -135,12 +142,7 @@ public class AdminUserServiceImpl implements AdminUserService {
                 .build();
         Account savedAccount = accountRepository.save(account);
 
-        Balance balance = Balance.builder()
-                .account(savedAccount)
-                .availableBalance(0.0)
-                .holdBalance(0.0)
-                .build();
-        balanceRepository.save(balance);
+
 
         User user = User.builder()
                 .account(savedAccount)
@@ -225,9 +227,8 @@ public class AdminUserServiceImpl implements AdminUserService {
                 throw new AppException(Errors.CARD_HAS_PENDING_TRANSACTIONS);
             }
 
-            Optional<Balance> balanceOpt = balanceRepository.findByAccount(account);
-            if (balanceOpt.isPresent()) {
-                Balance balance = balanceOpt.get();
+            List<Balance> balances = balanceRepository.findByAccount(account);
+            for (Balance balance : balances) {
                 if (balance.getAvailableBalance() != 0.0 || balance.getHoldBalance() != 0.0) {
                     throw new AppException(Errors.ACCOUNT_HAS_NON_ZERO_BALANCE);
                 }
@@ -235,11 +236,14 @@ public class AdminUserServiceImpl implements AdminUserService {
 
             refreshTokenRepository.deleteByUser(user);
 
+            if (!balances.isEmpty()) {
+                balanceRepository.deleteAll(balances);
+            }
+
             if (!cards.isEmpty()) {
                 cardRepository.deleteAll(cards);
             }
 
-            balanceOpt.ifPresent(balanceRepository::delete);
             userRepository.delete(user);
             accountRepository.delete(account);
             evictCache(account.getAccountId());

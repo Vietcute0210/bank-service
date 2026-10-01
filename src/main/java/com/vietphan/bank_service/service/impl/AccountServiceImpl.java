@@ -79,12 +79,7 @@ public class AccountServiceImpl implements AccountService {
 
         Account savedAccount = accountRepository.save(account);
 
-        Balance initialBalance = Balance.builder()
-                .account(savedAccount)
-                .availableBalance(0.0)
-                .holdBalance(0.0)
-                .build();
-        balanceRepository.save(initialBalance);
+
 
         return accountMapper.toResponse(savedAccount);
     }
@@ -134,9 +129,8 @@ public class AccountServiceImpl implements AccountService {
             throw new AppException(Errors.ACCOUNT_HAS_LINKED_CARDS);
         }
 
-        Optional<Balance> balanceOpt = balanceRepository.findByAccount(account);
-        if (balanceOpt.isPresent()) {
-            Balance balance = balanceOpt.get();
+        List<Balance> balances = balanceRepository.findByAccount(account);
+        for (Balance balance : balances) {
             if (balance.getAvailableBalance() != 0.0 || balance.getHoldBalance() != 0.0) {
                 throw new AppException(Errors.ACCOUNT_HAS_NON_ZERO_BALANCE);
             }

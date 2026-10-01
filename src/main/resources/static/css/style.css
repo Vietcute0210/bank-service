@@ -1,0 +1,343 @@
+/* Global styles */
+:root {
+    --primary-blue: #0066FF;
+    --primary-blue-hover: #0052cc;
+    --success-green: #198754;
+    --success-green-hover: #157347;
+    --warning-yellow: #FFC107;
+    --warning-yellow-hover: #e0a800;
+    --danger-red: #DC3545;
+    --danger-red-hover: #bb2d3b;
+    --dark-bg: #212529;
+    --gray-bg: #f8f9fa;
+    --border-color: #dee2e6;
+    --readonly-bg: #e9ecef;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: #f8f9fa;
+    color: #333333;
+    margin: 0;
+    padding: 0;
+}
+
+/* User Navbar */
+.user-navbar {
+    background-color: var(--dark-bg);
+    padding: 12px 24px;
+}
+
+.user-navbar .navbar-brand {
+    color: #ffffff;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+}
+
+.user-navbar .nav-link {
+    color: #adb5bd;
+    font-size: 15px;
+    margin: 0 12px;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.user-navbar .nav-link:hover,
+.user-navbar .nav-link.active {
+    color: #ffffff;
+    font-weight: 500;
+}
+
+.btn-logout {
+    background-color: var(--primary-blue);
+    color: #ffffff !important;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 18px;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.btn-logout:hover {
+    background-color: var(--primary-blue-hover);
+}
+
+/* Hero Section */
+.hero-section {
+    background-color: #737373;
+    color: #ffffff;
+    padding: 80px 20px;
+    text-align: center;
+}
+
+.hero-section h1 {
+    font-size: 42px;
+    font-weight: 800;
+    margin-bottom: 16px;
+}
+
+.hero-section p {
+    font-size: 18px;
+    color: #e5e5e5;
+    margin-bottom: 24px;
+}
+
+.hero-section .btn-hero {
+    background-color: var(--primary-blue);
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 28px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.hero-section .btn-hero:hover {
+    background-color: var(--primary-blue-hover);
+}
+
+/* Feature cards */
+.feature-box {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 36px 20px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    height: 100%;
+}
+
+.feature-box .icon {
+    font-size: 40px;
+    color: var(--primary-blue);
+    margin-bottom: 16px;
+}
+
+.feature-box h4 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 0;
+}
+
+/* Auth Cards */
+.auth-wrapper {
+    min-height: 85vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.auth-card {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    width: 100%;
+    max-width: 400px;
+    padding: 36px 30px;
+}
+
+.auth-card h2 {
+    font-size: 26px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.auth-card .form-control {
+    border-radius: 8px;
+    height: 44px;
+    border: 1px solid var(--border-color);
+    margin-bottom: 16px;
+}
+
+.auth-card .form-control:focus {
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.15);
+}
+
+.btn-auth-primary {
+    background-color: var(--primary-blue);
+    color: #ffffff;
+    width: 100%;
+    height: 44px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 10px;
+}
+
+.btn-auth-primary:hover {
+    background-color: var(--primary-blue-hover);
+}
+
+.btn-auth-success {
+    background-color: var(--success-green);
+    color: #ffffff;
+    width: 100%;
+    height: 44px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 10px;
+}
+
+.btn-auth-success:hover {
+    background-color: var(--success-green-hover);
+}
+
+.auth-footer-link {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+    color: #495057;
+}
+
+.auth-footer-link a {
+    color: var(--primary-blue);
+    text-decoration: underline;
+    font-weight: 500;
+}
+
+/* Account Info Card */
+.content-card {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 30px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    margin-bottom: 24px;
+}
+
+.content-card h2, .content-card h3 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+.info-line {
+    font-size: 16px;
+    margin-bottom: 12px;
+}
+
+.card-item-box {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 18px 24px;
+    margin-top: 16px;
+}
+
+/* Common Buttons */
+.btn-yellow {
+    background-color: var(--warning-yellow);
+    color: #212529;
+    border: none;
+    font-weight: 600;
+    border-radius: 6px;
+    padding: 8px 20px;
+}
+.btn-yellow:hover {
+    background-color: var(--warning-yellow-hover);
+}
+
+.btn-blue {
+    background-color: var(--primary-blue);
+    color: #ffffff;
+    border: none;
+    font-weight: 600;
+    border-radius: 6px;
+    padding: 8px 20px;
+}
+.btn-blue:hover {
+    background-color: var(--primary-blue-hover);
+    color: #ffffff;
+}
+
+.btn-green {
+    background-color: var(--success-green);
+    color: #ffffff;
+    border: none;
+    font-weight: 600;
+    border-radius: 6px;
+    padding: 8px 20px;
+}
+.btn-green:hover {
+    background-color: var(--success-green-hover);
+    color: #ffffff;
+}
+
+.btn-red {
+    background-color: var(--danger-red);
+    color: #ffffff;
+    border: none;
+    font-weight: 600;
+    border-radius: 6px;
+    padding: 8px 20px;
+}
+.btn-red:hover {
+    background-color: var(--danger-red-hover);
+    color: #ffffff;
+}
+
+.btn-gray {
+    background-color: #5a6268;
+    color: #ffffff;
+    border: none;
+    font-weight: 600;
+    border-radius: 6px;
+    padding: 8px 20px;
+}
+.btn-gray:hover {
+    background-color: #4b5257;
+    color: #ffffff;
+}
+
+/* Two-column Transfer Panels */
+.transfer-panel {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    height: 100%;
+}
+
+.transfer-panel-header {
+    background: #f8f9fa;
+    border-bottom: 1px solid var(--border-color);
+    padding: 16px 20px;
+    font-size: 18px;
+    font-weight: 600;
+    border-radius: 8px 8px 0 0;
+}
+
+.transfer-panel-body {
+    padding: 24px;
+}
+
+.input-readonly {
+    background-color: var(--readonly-bg) !important;
+    cursor: not-allowed;
+}
+
+/* Table styles */
+.custom-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.custom-table th {
+    padding: 14px 16px;
+    font-weight: 700;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.custom-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border-color);
+    vertical-align: middle;
+}

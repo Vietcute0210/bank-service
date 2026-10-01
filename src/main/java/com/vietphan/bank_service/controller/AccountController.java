@@ -4,6 +4,7 @@ import com.vietphan.bank_service.DTO.request.AccountRequest;
 import com.vietphan.bank_service.DTO.response.AccountResponse;
 import com.vietphan.bank_service.DTO.response.BaseResponse;
 import com.vietphan.bank_service.service.AccountService;
+import com.vietphan.bank_service.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +16,17 @@ import java.util.List;
 public class AccountController {
 
     private final AccountService accountService;
+
+    @GetMapping("/my-profile")
+    public BaseResponse<AccountResponse> getMyProfile() {
+        Long accountId = SecurityUtils.getCurrentAccountId();
+        AccountResponse response = accountService.getAccountById(accountId);
+        return BaseResponse.<AccountResponse>builder()
+                .code(1000)
+                .message("Get my profile successfully")
+                .data(response)
+                .build();
+    }
 
     @GetMapping("/{id}")
     public BaseResponse<AccountResponse> getAccountById(@PathVariable("id") Long id) {

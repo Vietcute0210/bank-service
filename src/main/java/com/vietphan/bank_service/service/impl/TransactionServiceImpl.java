@@ -107,22 +107,26 @@ public class TransactionServiceImpl implements TransactionService {
         Account senderAccount = accountRepository.findById(accountId)
                 .orElseThrow(() -> new AppException(Errors.ACCOUNT_NOT_FOUND));
 
-        Balance senderBalance = balanceRepository.findByAccount(senderAccount)
+        // Tìm thẻ nguồn (fromCard)
+        String fromCardNumber = request.getFromCardNumber();
+        Card senderCard = null;
+        if (fromCardNumber == null || fromCardNumber.isBlank()) {
+            List<Card> senderCards = cardRepository.findByAccount(senderAccount);
+            senderCard = senderCards.stream()
+                    .filter(c -> c.getStatus() == CardStatus.ACTIVE)
+                    .findFirst()
+                    .orElseThrow(() -> new AppException(Errors.CARD_NOT_FOUND));
+            fromCardNumber = senderCard.getCardNumber();
+        } else {
+            senderCard = cardRepository.findByCardNumber(fromCardNumber)
+                    .orElseThrow(() -> new AppException(Errors.CARD_NOT_FOUND));
+        }
+
+        Balance senderBalance = balanceRepository.findByCard(senderCard)
                 .orElseThrow(() -> new AppException(Errors.BALANCE_NOT_FOUND));
 
         if (senderBalance.getAvailableBalance() < request.getAmount()) {
             throw new AppException(Errors.INSUFFICIENT_FUNDS);
-        }
-
-        // Tìm thẻ nguồn (fromCard)
-        String fromCardNumber = request.getFromCardNumber();
-        if (fromCardNumber == null || fromCardNumber.isBlank()) {
-            List<Card> senderCards = cardRepository.findByAccount(senderAccount);
-            fromCardNumber = senderCards.stream()
-                    .filter(c -> c.getStatus() == CardStatus.ACTIVE)
-                    .map(Card::getCardNumber)
-                    .findFirst()
-                    .orElse(senderCards.isEmpty() ? "CARD_" + accountId : senderCards.get(0).getCardNumber());
         }
 
         // Kiểm tra thẻ đích (toCard)
@@ -193,28 +197,30 @@ public class TransactionServiceImpl implements TransactionService {
         // 1. Trừ holdBalance của người gửi
         Card senderCard = cardRepository.findByCardNumber(transaction.getFromCardNumber())
                 .orElse(null);
-        if (senderCard != null && senderCard.getAccount() != null) {
-            Account senderAcc = senderCard.getAccount();
-            balanceRepository.findByAccount(senderAcc).ifPresent(b -> {
+        if (senderCard != null) {
+            balanceRepository.findByCard(senderCard).ifPresent(b -> {
                 b.setHoldBalance(Math.max(0, b.getHoldBalance() - transaction.getAmount()));
                 balanceRepository.save(b);
-                try {
-                    redisTemplate.delete(RedisConstants.BALANCE_CACHE_PREFIX + senderAcc.getAccountId());
-                } catch (Exception ignored) {}
+                if (senderCard.getAccount() != null) {
+                    try {
+                        redisTemplate.delete(RedisConstants.BALANCE_CACHE_PREFIX + senderCard.getAccount().getAccountId());
+                    } catch (Exception ignored) {}
+                }
             });
         }
 
         // 2. Cộng availableBalance cho người nhận (nếu có tài khoản trong hệ thống)
         Card recipientCard = cardRepository.findByCardNumber(transaction.getToCardNumber())
                 .orElse(null);
-        if (recipientCard != null && recipientCard.getAccount() != null) {
-            Account recipientAcc = recipientCard.getAccount();
-            balanceRepository.findByAccount(recipientAcc).ifPresent(b -> {
+        if (recipientCard != null) {
+            balanceRepository.findByCard(recipientCard).ifPresent(b -> {
                 b.setAvailableBalance(b.getAvailableBalance() + transaction.getAmount());
                 balanceRepository.save(b);
-                try {
-                    redisTemplate.delete(RedisConstants.BALANCE_CACHE_PREFIX + recipientAcc.getAccountId());
-                } catch (Exception ignored) {}
+                if (recipientCard.getAccount() != null) {
+                    try {
+                        redisTemplate.delete(RedisConstants.BALANCE_CACHE_PREFIX + recipientCard.getAccount().getAccountId());
+                    } catch (Exception ignored) {}
+                }
             });
         }
 
