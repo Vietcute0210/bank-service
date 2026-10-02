@@ -59,10 +59,15 @@ public class BalanceServiceImpl implements BalanceService {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new AppException(Errors.ACCOUNT_NOT_FOUND));
 
-        Balance balance = balanceRepository.findByAccount(account)
-                .orElseThrow(() -> new AppException(Errors.BALANCE_NOT_FOUND));
+        List<Balance> balances = balanceRepository.findByAccount(account);
+        double totalAvailable = balances.stream().mapToDouble(Balance::getAvailableBalance).sum();
+        double totalHold = balances.stream().mapToDouble(Balance::getHoldBalance).sum();
 
-        BalanceResponse response = balanceMapper.toResponse(balance);
+        BalanceResponse response = BalanceResponse.builder()
+                .accountId(accountId)
+                .availableBalance(totalAvailable)
+                .holdBalance(totalHold)
+                .build();
 
         try {
             redisTemplate.opsForValue().set(keyCache, response, Duration.ofMinutes(cacheTtlMinutes));
@@ -75,7 +80,7 @@ public class BalanceServiceImpl implements BalanceService {
 
     @Override
     @Transactional
-    public BalanceResponse addBalance(Long accountId, double money) {
+    public BalanceResponse addBalance(Long accountId, Long cardId, double money) {
         if (money <= 0) {
             throw new AppException(Errors.INVALID_AMOUNT);
         }
@@ -84,22 +89,20 @@ public class BalanceServiceImpl implements BalanceService {
             throw new AppException(Errors.ACCOUNT_NOT_FOUND);
         }
 
-        Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new AppException(Errors.ACCOUNT_NOT_FOUND));
+        Card card = cardRepository.findById(cardId)
+                .orElseThrow(() -> new AppException(Errors.CARD_NOT_FOUND));
 
-        Balance balance = balanceRepository.findByAccount(account)
+        if (!card.getAccount().getAccountId().equals(accountId)) {
+            throw new AppException(Errors.FORBIDDEN);
+        }
+
+        Balance balance = balanceRepository.findByCard(card)
                 .orElseThrow(() -> new AppException(Errors.BALANCE_NOT_FOUND));
 
         balance.setAvailableBalance(balance.getAvailableBalance() + money);
         Balance updatedBalance = balanceRepository.save(balance);
 
-        // Lấy cardNumber từ danh sách thẻ của account
-        List<Card> cards = cardRepository.findByAccount(account);
-        String cardNumber = cards.stream()
-                .filter(c -> c.getStatus() == CardStatus.ACTIVE)
-                .findFirst()
-                .map(Card::getCardNumber)
-                .orElse(cards.isEmpty() ? "0" : cards.get(0).getCardNumber());
+        String cardNumber = card.getCardNumber();
 
         // Ghi log giao dịch DEPOSIT
         Transaction transaction = Transaction.builder()
@@ -111,20 +114,20 @@ public class BalanceServiceImpl implements BalanceService {
                 .build();
         transactionRepository.save(transaction);
 
-        BalanceResponse response = balanceMapper.toResponse(updatedBalance);
+        // Xóa cache cũ để getBalance() tính lại tổng chính xác từ tất cả thẻ
         String keyCache = RedisConstants.BALANCE_CACHE_PREFIX + accountId;
         try {
-            redisTemplate.opsForValue().set(keyCache, response, Duration.ofMinutes(cacheTtlMinutes));
+            redisTemplate.delete(keyCache);
         } catch (Exception e) {
-            System.err.println("Redis error on update addBalance: " + e.getMessage());
+            System.err.println("Redis error on delete addBalance cache: " + e.getMessage());
         }
 
-        return response;
+        return getBalance(accountId);
     }
 
     @Override
     @Transactional
-    public BalanceResponse subtractBalance(Long accountId, double money) {
+    public BalanceResponse subtractBalance(Long accountId, Long cardId, double money) {
         if (money <= 0) {
             throw new AppException(Errors.INVALID_AMOUNT);
         }
@@ -133,10 +136,14 @@ public class BalanceServiceImpl implements BalanceService {
             throw new AppException(Errors.ACCOUNT_NOT_FOUND);
         }
 
-        Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new AppException(Errors.ACCOUNT_NOT_FOUND));
+        Card card = cardRepository.findById(cardId)
+                .orElseThrow(() -> new AppException(Errors.CARD_NOT_FOUND));
 
-        Balance balance = balanceRepository.findByAccount(account)
+        if (!card.getAccount().getAccountId().equals(accountId)) {
+            throw new AppException(Errors.FORBIDDEN);
+        }
+
+        Balance balance = balanceRepository.findByCard(card)
                 .orElseThrow(() -> new AppException(Errors.BALANCE_NOT_FOUND));
 
         if (balance.getAvailableBalance() < money) {
@@ -146,13 +153,7 @@ public class BalanceServiceImpl implements BalanceService {
         balance.setAvailableBalance(balance.getAvailableBalance() - money);
         Balance updatedBalance = balanceRepository.save(balance);
 
-        // Lấy cardNumber từ danh sách thẻ của account
-        List<Card> cards = cardRepository.findByAccount(account);
-        String cardNumber = cards.stream()
-                .filter(c -> c.getStatus() == CardStatus.ACTIVE)
-                .findFirst()
-                .map(Card::getCardNumber)
-                .orElse(cards.isEmpty() ? "0" : cards.get(0).getCardNumber());
+        String cardNumber = card.getCardNumber();
 
         // Ghi log giao dịch WITHDRAWAL
         Transaction transaction = Transaction.builder()
@@ -164,14 +165,14 @@ public class BalanceServiceImpl implements BalanceService {
                 .build();
         transactionRepository.save(transaction);
 
-        BalanceResponse response = balanceMapper.toResponse(updatedBalance);
+        // Xóa cache cũ để getBalance() tính lại tổng chính xác từ tất cả thẻ
         String keyCache = RedisConstants.BALANCE_CACHE_PREFIX + accountId;
         try {
-            redisTemplate.opsForValue().set(keyCache, response, Duration.ofMinutes(cacheTtlMinutes));
+            redisTemplate.delete(keyCache);
         } catch (Exception e) {
-            System.err.println("Redis error on update subtractBalance: " + e.getMessage());
+            System.err.println("Redis error on delete subtractBalance cache: " + e.getMessage());
         }
 
-        return response;
+        return getBalance(accountId);
     }
 }

@@ -75,13 +75,13 @@ public class DataInitializer implements CommandLineRunner {
                             .currency("VND")
                             .build()));
 
-            balanceRepository.findByAccount(account).orElseGet(() ->
-                    balanceRepository.save(Balance.builder()
-                            .account(account)
-                            .availableBalance(100_000_000.0)
-                            .holdBalance(0.0)
-                            .build())
-            );
+            if (balanceRepository.findByAccount(account).isEmpty()) {
+                balanceRepository.save(Balance.builder()
+                        .account(account)
+                        .availableBalance(100_000_000.0)
+                        .holdBalance(0.0)
+                        .build());
+            }
 
             UserLevel vip3 = userLevelRepository.findByLevelName("VIP3").orElse(null);
 

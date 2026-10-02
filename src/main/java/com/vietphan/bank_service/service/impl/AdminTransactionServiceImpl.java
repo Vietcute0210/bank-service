@@ -80,23 +80,25 @@ public class AdminTransactionServiceImpl implements AdminTransactionService {
             if (transaction.getTransactionType() == TransactionType.TRANSFER) {
                 // Deduct holdBalance from sender
                 Card senderCard = cardRepository.findByCardNumber(transaction.getFromCardNumber()).orElse(null);
-                if (senderCard != null && senderCard.getAccount() != null) {
-                    Account senderAcc = senderCard.getAccount();
-                    balanceRepository.findByAccount(senderAcc).ifPresent(b -> {
+                if (senderCard != null) {
+                    balanceRepository.findByCard(senderCard).ifPresent(b -> {
                         b.setHoldBalance(Math.max(0, b.getHoldBalance() - transaction.getAmount()));
                         balanceRepository.save(b);
-                        evictBalanceCache(senderAcc.getAccountId());
+                        if (senderCard.getAccount() != null) {
+                            evictBalanceCache(senderCard.getAccount().getAccountId());
+                        }
                     });
                 }
 
                 // Add availableBalance to recipient
                 Card recipientCard = cardRepository.findByCardNumber(transaction.getToCardNumber()).orElse(null);
-                if (recipientCard != null && recipientCard.getAccount() != null) {
-                    Account recipientAcc = recipientCard.getAccount();
-                    balanceRepository.findByAccount(recipientAcc).ifPresent(b -> {
+                if (recipientCard != null) {
+                    balanceRepository.findByCard(recipientCard).ifPresent(b -> {
                         b.setAvailableBalance(b.getAvailableBalance() + transaction.getAmount());
                         balanceRepository.save(b);
-                        evictBalanceCache(recipientAcc.getAccountId());
+                        if (recipientCard.getAccount() != null) {
+                            evictBalanceCache(recipientCard.getAccount().getAccountId());
+                        }
                     });
                 }
             }

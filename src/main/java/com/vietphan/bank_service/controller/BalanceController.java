@@ -26,9 +26,9 @@ public class BalanceController {
     }
 
     @PostMapping("/add")
-    public BaseResponse<BalanceResponse> addBalance(@RequestParam("money") double money) {
+    public BaseResponse<BalanceResponse> addBalance(@RequestParam("cardId") Long cardId, @RequestParam("money") double money) {
         Long accountId = SecurityUtils.getCurrentAccountId();
-        var result = balanceService.addBalance(accountId, money);
+        var result = balanceService.addBalance(accountId, cardId, money);
         return BaseResponse.<BalanceResponse>builder()
                 .code(1000)
                 .message("Add balance successfully")
@@ -37,9 +37,9 @@ public class BalanceController {
     }
 
     @PostMapping("/sub")
-    public BaseResponse<BalanceResponse> subBalance(@RequestParam("money") double money) {
+    public BaseResponse<BalanceResponse> subBalance(@RequestParam("cardId") Long cardId, @RequestParam("money") double money) {
         Long accountId = SecurityUtils.getCurrentAccountId();
-        var result = balanceService.subtractBalance(accountId, money);
+        var result = balanceService.subtractBalance(accountId, cardId, money);
         return BaseResponse.<BalanceResponse>builder()
                 .code(1000)
                 .message("Subtract balance successfully")

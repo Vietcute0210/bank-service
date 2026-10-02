@@ -22,4 +22,6 @@ public class CardResponse {
     private boolean hasPendingTransactions;
     private Instant createdAt;
     private Instant updatedAt;
+    private Double availableBalance;
+    private Double holdBalance;
 }

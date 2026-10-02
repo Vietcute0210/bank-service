@@ -26,6 +26,7 @@ public class CardServiceImpl implements CardService {
 
     private final CardRepository cardRepository;
     private final AccountRepository accountRepository;
+    private final com.vietphan.bank_service.repository.BalanceRepository balanceRepository;
     private final CardMapper cardMapper;
 
     @Override
@@ -65,7 +66,18 @@ public class CardServiceImpl implements CardService {
         }
 
         Card savedCard = cardRepository.save(card);
-        return cardMapper.toResponse(savedCard);
+        com.vietphan.bank_service.entity.Balance balance = com.vietphan.bank_service.entity.Balance.builder()
+                .account(account)
+                .card(savedCard)
+                .availableBalance(0.0)
+                .holdBalance(0.0)
+                .build();
+        balanceRepository.save(balance);
+
+        CardResponse response = cardMapper.toResponse(savedCard);
+        response.setAvailableBalance(0.0);
+        response.setHoldBalance(0.0);
+        return response;
     }
 
     @Override
@@ -75,14 +87,14 @@ public class CardServiceImpl implements CardService {
                 .orElseThrow(() -> new AppException(Errors.ACCOUNT_NOT_FOUND));
 
         return cardRepository.findByAccount(account).stream()
-                .map(cardMapper::toResponse)
+                .map(card -> populateBalance(cardMapper.toResponse(card), card))
                 .toList();
     }
 
     @Override
     public CardResponse getCardById(Long cardId) {
         return cardRepository.findById(cardId)
-                .map(cardMapper::toResponse)
+                .map(card -> populateBalance(cardMapper.toResponse(card), card))
                 .orElseThrow(() -> new AppException(Errors.CARD_NOT_FOUND));
     }
 
@@ -98,7 +110,15 @@ public class CardServiceImpl implements CardService {
 
         card.setStatus(CardStatus.INACTIVE);
         Card deletedCard = cardRepository.save(card);
-        return cardMapper.toResponse(deletedCard);
+        return populateBalance(cardMapper.toResponse(deletedCard), deletedCard);
+    }
+
+    private CardResponse populateBalance(CardResponse response, Card card) {
+        balanceRepository.findByCard(card).ifPresent(b -> {
+            response.setAvailableBalance(b.getAvailableBalance());
+            response.setHoldBalance(b.getHoldBalance());
+        });
+        return response;
     }
 
     private String generateUniqueCardNumber() {

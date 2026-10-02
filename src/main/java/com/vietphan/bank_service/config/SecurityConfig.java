@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.vietphan.bank_service.security.JwtAuthenticationFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import com.vietphan.bank_service.exception.Errors;
+import jakarta.servlet.DispatcherType;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -31,8 +32,13 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        // Public endpoints
+                        // Cho phep tat ca Forward dispatcher (bat buoc cho JSP trong Spring Boot 3 / Spring Security 6)
+                        .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
+                        // Public endpoints, static resources, JSP internal path & view pages
                         .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
+                        .requestMatchers("/WEB-INF/**", "/WEB-INF/jsp/**").permitAll()
+                        .requestMatchers("/", "/login", "/register", "/home", "/account", "/transfer", "/transfer/**", "/history", "/create-card", "/admin/**").permitAll()
                         // User endpoints (authenticated)
                         .requestMatchers("/api/v1/balance/**").authenticated()
                         .requestMatchers("/api/v1/card/**").authenticated()
@@ -40,6 +46,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/transaction/**", "/api/v1/transactions/**").authenticated()
                         .requestMatchers("/api/v1/account/**").authenticated()
                         // Admin only endpoints
+                        .requestMatchers("/api/v1/user-levels/**").hasRole("ADMIN")
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )

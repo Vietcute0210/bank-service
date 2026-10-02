@@ -65,13 +65,7 @@ public class AuthServiceImpl implements AuthService {
                 .build();
         Account savedAccount = accountRepository.save(account);
 
-        // khoi tao balance voi account moi
-        Balance balance = Balance.builder()
-                .account(savedAccount)
-                .availableBalance(0.0)
-                .holdBalance(0.0)
-                .build();
-        balanceRepository.save(balance);
+
 
         // khoi tao user lien ket account va level mac dinh
         UserLevel defaultLevel = userLevelRepository.findByLevelName("VIP1").orElse(null);
@@ -94,6 +88,8 @@ public class AuthServiceImpl implements AuthService {
                 .refreshToken(refreshToken)
                 .username(user.getUsername())
                 .accountId(user.getAccount().getAccountId())
+                .role(user.getRole().name())
+                .email(user.getAccount().getEmail())
                 .build();
     }
 
@@ -115,6 +111,8 @@ public class AuthServiceImpl implements AuthService {
                 .refreshToken(refreshToken)
                 .accountId(user.getAccount().getAccountId())
                 .username(user.getUsername())
+                .role(user.getRole().name())
+                .email(user.getAccount() != null ? user.getAccount().getEmail() : "")
                 .build();
     }
 
@@ -137,6 +135,8 @@ public class AuthServiceImpl implements AuthService {
                 .refreshToken(tokenStr)
                 .username(user.getUsername())
                 .accountId(user.getAccount().getAccountId())
+                .role(user.getRole().name())
+                .email(user.getAccount() != null ? user.getAccount().getEmail() : "")
                 .build();
     }
 
